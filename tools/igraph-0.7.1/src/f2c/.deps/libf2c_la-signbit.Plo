@@ -1,0 +1,3 @@
+f2c/libf2c_la-signbit.lo: f2c/signbit.c f2c/arith.h
+
+f2c/arith.h:
