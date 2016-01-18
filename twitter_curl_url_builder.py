@@ -1,7 +1,7 @@
 # Generates a properly signed URL for opening a twitter stream via curl
 #
 # To use, at the command prompt (or in bash)
-#    URL=$(python twitter_curl_kickstarter.py)
+#    URL=$(python twitter_curl_url_builder.py)
 #    curl -get "$URL"
 #
 
