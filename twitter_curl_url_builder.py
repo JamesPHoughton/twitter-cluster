@@ -21,10 +21,10 @@ params = {
 }
 
 # Set up instances of our Token and Consumer.
-token = oauth.Token(key='872256223-QSE0ftkRMIOgVGbKP8lHJLibGcr8z8bA36g9K9YV',
-                    secret='FGZDSqXyieIW0nqEe4BJ6q63GF2D0vwdOsSd2cXqE')
-consumer = oauth.Consumer(key='MdPm8FkpL81J48roVUP9SQ',
-                          secret='q2YoANTztCFScmjkecgiPwbfSJif0aRGWJFANgnV18')
+token = oauth.Token(key='*****************************',
+                    secret='**************************')
+consumer = oauth.Consumer(key='***********************',
+                          secret='********************')
 
 # Set our token/key parameters
 params['oauth_token'] = token.key
