@@ -8,7 +8,13 @@
 # ### Utilities
 # These scripts depend upon a number of external utilities as listed below:
 
-# In[33]:
+# In[ ]:
+
+import datetime
+print 'started at %s'%datetime.datetime.now()
+
+
+# In[ ]:
 
 import json
 import gzip
@@ -24,12 +30,12 @@ import pickle
 import subprocess
 
 
-# In[81]:
+# In[ ]:
 
 #load the locations of the various elements of the analysis
 with open('config.json','r') as jfile:
     config = json.load(jfile)
-config
+print config
 
 
 # ### Data Files
@@ -37,7 +43,7 @@ config
 # 
 # All the files have the format `posts_sample_YYYYMMDD_HHMMSS_aa.txt` where the date listed is the date at which the stream was initialized. Multiple days worth of stream may be grouped under the same second, as long as the stream remains unbroken. If we have to restart the stream, then a new datetime will be added to the files.
 
-# In[98]:
+# In[ ]:
 
 # Collect a list of all the filenames that will be working with
 files = glob.glob(config['data_dir']+'posts_sample*.gz')
@@ -49,7 +55,7 @@ print 'working with %i input files'%len(files)
 # 
 #     ['20141101', '20141102', '20141103', ... '20150629', '20150630']
 
-# In[97]:
+# In[ ]:
 
 dt = datetime.datetime(2014, 11, 1)
 end = datetime.datetime(2015, 7, 1)
@@ -120,6 +126,8 @@ for i, zfile in enumerate(files):
 
 with open(config['python_working_dir']+"tallydict.pickle", "r" ) as picklefile:
     tallydict = pickle.load(picklefile)
+    
+print 'Step 1 Complete at %s'%datetime.datetime.now()
 
 
 # ##Step 2: Create Weighted Edge Lists
@@ -171,10 +179,11 @@ for key in tallydict.keys(): #keys are datestamps
 
 # Now lets get a list of the wieghed edgelist files, which will be helpful later on.
 
-# In[96]:
+# In[ ]:
 
 weighted_files = glob.glob(config['python_working_dir']+'*/weight*.txt')
 print 'created %i weighted edgelist files'%len(weighted_files)
+print 'Step 2 Complete at %s'%datetime.datetime.now()
 
 
 # ##Step 3: Construct unweigheted edgelist
@@ -212,7 +221,7 @@ print 'created %i weighted edgelist files'%len(weighted_files)
 # 
 # Filenames include the date and the threshold, and the fact that these files are unweighted edge lists.
 
-# In[22]:
+# In[ ]:
 
 for threshold in range (2, 15):
     for infile_name in weighted_files:
@@ -243,10 +252,11 @@ for threshold in range (2, 15):
 
 # Now lets get a list of all the unweighted edgelist files we created
 
-# In[95]:
+# In[ ]:
 
 unweighted_files = glob.glob(config['python_working_dir']+'*/*/unweight*.txt')
 print 'created %i unweighted edgelist files'%len(unweighted_files)
+print 'Step 3 Complete at %s'%datetime.datetime.now()
 
 
 # ##Step 4: Find the communities
@@ -259,7 +269,7 @@ print 'created %i unweighted edgelist files'%len(unweighted_files)
 # 
 # It is a relatively simple task to feed each unweighed edgelist we generated above into the `./maximal_cliques` algorithm.
 
-# In[75]:
+# In[ ]:
 
 for infile in unweighted_files:
     th_dir = os.path.dirname(infile)
@@ -270,19 +280,27 @@ for infile in unweighted_files:
 
 # Once this step is complete, we then feed the `.mcliques` output files into the `cosparallel` algorith.
 
-# In[76]:
+# In[ ]:
 
 maxclique_files = glob.glob(config['python_working_dir']+'*/*/*.mcliques')
 print 'created %i maxcliques files'%len(maxclique_files)
+print 'Step 4a Complete at %s'%datetime.datetime.now()
 
 
-# In[85]:
+# In[ ]:
 
 current_directory = os.getcwd()
 for infile in maxclique_files:
     mc_dir = os.path.dirname(infile)
     mc_file = os.path.basename(infile)
     subprocess.call([os.getcwd()+'/'+config['cos-parallel'], mc_file], cwd=mc_dir)
+
+
+# In[ ]:
+
+community_files = glob.glob(config['python_working_dir']+'*/*/[0-9]*communities.txt')
+print 'created %i community files':%len(community_files)
+print 'Step 4b Complete at %s'%datetime.datetime.now()    
 
 
 # ## Step 5: Translate back from numbers to actual words
@@ -297,13 +315,7 @@ for infile in maxclique_files:
 # 
 # 
 
-# In[87]:
-
-community_files = glob.glob(config['python_working_dir']+'*/*/[0-9]*communities.txt')
-print 'created %i community files':%len(community_files)
-
-
-# In[88]:
+# In[ ]:
 
 # we'll be reading a lot of files like this, 
 # so it makes sense to create a function to help with it.
@@ -344,9 +356,14 @@ for infile in community_files:
                                 ['\n']))
 
 
+# In[ ]:
+
+print 'Step 5 Complete at %s'%datetime.datetime.now()
+
+
 # While we're at it, we'll write a function to read the files we're creating
 
-# In[89]:
+# In[ ]:
 
 def read_named_cluster_file(infile_name):
     """ take a file output from COS and return a """
@@ -368,7 +385,7 @@ def read_named_cluster_file(infile_name):
 # 
 # We'll define a function that, given the clusers on day 1 and day 2, creates a matrix from the two, with day1 clusters as row elements and day2 clusters as column elements. The entries to the matrix are the number of nodes shared by each cluster.
 
-# In[90]:
+# In[ ]:
 
 #brute force, without the intra-day clustering
 def compute_transition_likelihood(current_clusters, next_clusters):
@@ -386,7 +403,7 @@ def compute_transition_likelihood(current_clusters, next_clusters):
 
 # We want to compute transition matricies for all clusters with every k and every threshold. We'll save the matrix for transitioning from Day1 to Day2 in Day1's folder. In many cases, there won't be an appropriate date/threshold/k combination, so we'll just skip that case.
 
-# In[93]:
+# In[ ]:
 
 #this should compute and store all of the transition likelihoods
 
@@ -415,8 +432,14 @@ for current_date in dates[:-1]:
                 
 
 
-# In[99]:
+# In[ ]:
 
 transition_files = glob.glob(config['python_working_dir']+'*/*/named*_communities_transition.csv')
 print 'created %i transition matrix files'%len(transition_files)
+print 'Step 6 Complete at %s'%datetime.datetime.now()
+
+
+# In[ ]:
+
+
 
