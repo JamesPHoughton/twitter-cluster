@@ -299,7 +299,7 @@ for infile in maxclique_files:
 # In[ ]:
 
 community_files = glob.glob(config['python_working_dir']+'*/*/[0-9]*communities.txt')
-print 'created %i community files':%len(community_files)
+print 'created %i community files'%len(community_files)
 print 'Step 4b Complete at %s'%datetime.datetime.now()    
 
 
