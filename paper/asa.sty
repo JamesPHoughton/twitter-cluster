@@ -1,0 +1,1209 @@
+% There is a problem when a \ref appears in a section title.
+%$$$ asa.sty $$$
+%
+% Obtained by CJP from Mark Schervish 9/14/01 - should be up-to-date version
+%
+% -------------------------------------------------------------------------
+% 
+% General style file for ASA documents: Contains citation and other
+% style commands.
+%  Place this in a file called asa.sty in the TeX search path.  
+% (Placing it in the same directory as the LaTeX document should also work.)
+%
+% -------------------------------------------------------
+% Raise the argument up a little (for left and right parentheses).
+%
+\typeout{ASA style. Unreleased}
+
+\def\@lp#1{\kern-.22ex\raise.2ex\hbox{#1}}
+\def\@rp#1{\raise.2ex\hbox{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Part 1: Citation commands
+%
+% This part of the file implements citations for the ``asa''
+% bibliography style. 
+%
+%    This file is a modification of the ``apalike'' LaTeX style.
+%    It was originally modified by Stephen N. Spencer, with further
+%    modifications by Young U. Ryu, and more by Mike Meyer and Mark J.
+%    Schervish. 
+%
+% The ``asa'' BibTeX bibliography style creates citations with labels:
+% \citeauthoryear{full-author-info}{abbrev-author-info}{numA}
+%             {yearA}{year}{year-ext}{sort-string}
+%
+%     where numA is the number of authors and
+%           yearA is the year, possibly with added a, b, c, etc.
+%           year  is just the year, without year-extra, and
+%           year-ext is either blank or "a",  "b", etc, depending on
+%                whether the year is 1997, 1997a, 1997b, etc.
+%           sort-string is the string used to decide if cites
+%                are by the same authors.  
+%
+% These labels are processed by the following LaTeX commands:
+%
+%  \cite{key}
+%    which produces citations with full author list and year.
+%  \citenp{key}
+%    which produces citations with full author list and year, but no
+%    parentheses around the year.
+%  \shortcite{key}
+%    which produces citations with abbreviated author list and year.
+%  \shortcitenp{key}
+%    which produces citations with abbreviated author list and year,
+%    but no parentheses around the year.
+%  \longcite{key}
+%    which produces citations with the entire author list and year.
+%  \longcitenp{key}
+%    which produces citations with entire author list and year,
+%    but no parentheses around the year.
+%  \citeA{key}
+%    which produces citations with only the full author list.
+%  \shortciteA{key}
+%    which produces only the abbreviated author list.
+%  \longciteA{key}
+%    which produces only the entire author list.
+%  \citeyear{key}
+%    which produces the year only.
+%  \citeyearext{key}
+%    which produces only the year plus any extenstion (like a or b) if any.
+%  \citeext{key}
+%    which produces only the extension (if any) to the year.
+%  \citenumA{key}
+%    which produces only the number of authors.
+%
+% The citations are not enclosed within parentheses. 
+% Abbreviated author lists use the ``et al.'' construct.
+%
+% This LaTeX style file must be used with the ``asa'' BibTeX style.
+%
+%-------------------------------------------------------
+% Citation macros.
+%
+%%\def\cite{\@ifnextchar [{\@tempswatrue\@citex}{\@tempswafalse\@citex[]}}
+%% \cite is defined in latex.tex.  The following \let just saves that
+%% definition as \@internalcite.  I reproduce the current definition
+%% above, just for reference.
+\let\@internalcite\cite
+
+\def\cite{\def\@citeseppen{-1000}%
+  \def\@citesep{,}%
+  \def\@closecite{)}%
+  \setcounter{@numauts}{0}%
+  \setcounter{@numaut}{0}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{%
+  \def\@aut{##7}\def\@year{##5}%
+  \ifnum ##8=0% Initial pass to count number of distinct authors and
+              % determine which way to print each author's name
+    \ifx\@aut\@prevaut%
+       \setbox\@tempcba\hbox{\@thisaut}\setbox\@tempcbb\hbox{{##1}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisaut{{##1}}\fi%
+       \setbox\@tempcba\hbox{\@thisbut}\setbox\@tempcbb\hbox{{##2}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisbut{{##2}}\fi%
+    \else%
+      \addtocounter{@numauts}{1}%
+      \ifnum\the@numauts>2%
+        \def\@tempaut{\@autlist}\xdef\@autlist{\@tempaut{\@thisaut}}%
+        \def\@tempaut{\@butlist}\xdef\@butlist{\@tempaut{\@thisbut}}%
+      \else%
+        \ifnum\the@numauts=2%
+          \xdef\@autlist{\@thisaut}\xdef\@butlist{\@thisbut}%
+        \fi%
+      \fi%
+      \gdef\@thisaut{{##1}}\gdef\@thisbut{{##2}}%
+    \fi%
+  \else% Main pass to produce text for document
+    \ifx\@aut\@prevaut% Previous authors == current authors
+      \ifx\@year\@prevyear% Same author, same year
+        ,##6%
+      \else% Same author, different years
+        \@citesep\ ##4%
+      \fi%
+    \else% Different authors
+      \addtocounter{@numaut}{1}%
+      \ifx\@prevaut\mm@null\else% First author
+        \ifnum\the@numaut=\the@numauts%
+          \ifnum\the@numaut>2%
+            \@closecite,\ and\ %
+          \else%
+            \@closecite\ and\ %
+          \fi%
+        \else%
+          \@closecite,\ %
+        \fi%
+      \fi%
+      \ifnum ##3>5%  More than 5 authors
+        \expandafter\@car\@butlist\@nil\ (##4%
+      \else%  Fewer than 5 authors
+        \ifnum ##8>1% Second or later cite of this work:
+           \expandafter\@car\@butlist\@nil\ (##4%
+        \else%  First cite of this work
+          \expandafter\@car\@autlist\@nil\ (##4%
+        \fi%
+      \fi%
+      \edef\@tempaut{\expandafter\@cdr\@autlist\@nil}%
+      \xdef\@autlist{\@tempaut}%
+      \edef\@tempaut{\expandafter\@cdr\@butlist\@nil}%
+      \xdef\@butlist{\@tempaut}%
+    \fi%
+    \gdef\@prevyear{##5}%
+  \fi%
+  \gdef\@prevaut{##7}}%
+  \@internalcite}
+
+\def\citenp{\def\@citeseppen{-1000}%
+  \def\@citesep{,}%
+  \def\@closecite{}%
+  \setcounter{@numauts}{0}%
+  \setcounter{@numaut}{0}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{%
+  \def\@aut{##7}\def\@year{##5}%
+  \ifnum ##8=0% Initial pass to count number of distinct authors and
+              % determine which way to print each author's name
+    \ifx\@aut\@prevaut%
+       \setbox\@tempcba\hbox{\@thisaut}\setbox\@tempcbb\hbox{{##1}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisaut{{##1}}\fi%
+       \setbox\@tempcba\hbox{\@thisbut}\setbox\@tempcbb\hbox{{##2}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisbut{{##2}}\fi%
+    \else%
+      \addtocounter{@numauts}{1}%
+      \ifnum\the@numauts>2%
+        \def\@tempaut{\@autlist}%
+        \xdef\@autlist{\@tempaut{\@thisaut}}\def\@tempaut{\@butlist}%
+        \xdef\@butlist{\@tempaut{\@thisbut}}%
+      \else%
+        \ifnum\the@numauts=2%
+          \xdef\@autlist{\@thisaut}\xdef\@butlist{\@thisbut}%
+        \fi%
+      \fi%
+      \gdef\@thisaut{{##1}}\gdef\@thisbut{{##2}}%
+    \fi%
+  \else% Main pass to produce text for document
+    \ifx\@aut\@prevaut% Previous authors == current authors
+      \ifx\@year\@prevyear% Same author, same year
+        ,##6%
+      \else% Same author, different years
+        \@citesep\ ##4%
+      \fi%
+    \else% Different authors
+      \addtocounter{@numaut}{1}%
+      \ifx\@prevaut\mm@null\else% First author
+        \@closecite;\ %
+      \fi%
+      \ifnum ##3>5%  More than 5 authors
+        \expandafter\@car\@butlist\@nil\ ##4%
+      \else%  Fewer than 5 authors
+        \ifnum ##8>1% Second or later cite of this work:
+           \expandafter\@car\@butlist\@nil\ ##4%
+        \else%  First cite of this work
+          \expandafter\@car\@autlist\@nil\ ##4%
+        \fi%
+      \fi%
+      \edef\@tempaut{\expandafter\@cdr\@autlist\@nil}%
+      \xdef\@autlist{\@tempaut}%
+      \edef\@tempaut{\expandafter\@cdr\@butlist\@nil}%
+      \xdef\@butlist{\@tempaut}%
+    \fi%
+    \gdef\@prevyear{##5}%
+  \fi%
+  \gdef\@prevaut{##7}}%
+  \@internalcite}
+
+\def\shortcite{\def\@citeseppen{-1000}%
+  \def\@citesep{,}%
+  \def\@closecite{)}%
+  \setcounter{@numauts}{0}%
+  \setcounter{@numaut}{0}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{%
+  \def\@aut{##7}\def\@year{##5}%
+  \ifnum ##8=0% Initial pass to count number of distinct authors and
+              % determine which way to print each author's name
+    \ifx\@aut\@prevaut%
+       \setbox\@tempcba\hbox{\@thisaut}\setbox\@tempcbb\hbox{{##1}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisaut{{##1}}\fi%
+       \setbox\@tempcba\hbox{\@thisbut}\setbox\@tempcbb\hbox{{##2}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisbut{{##2}}\fi%
+    \else%
+      \addtocounter{@numauts}{1}%
+      \ifnum\the@numauts>2%
+        \def\@tempaut{\@autlist}%
+        \xdef\@autlist{\@tempaut{\@thisaut}}\def\@tempaut{\@butlist}%
+        \xdef\@butlist{\@tempaut{\@thisbut}}%
+      \else%
+        \ifnum\the@numauts=2%
+          \xdef\@autlist{\@thisaut}\xdef\@butlist{\@thisbut}%
+        \fi%
+      \fi%
+      \gdef\@thisaut{{##1}}\gdef\@thisbut{{##2}}%
+    \fi%
+  \else% Main pass to produce text for document
+    \ifx\@aut\@prevaut% Previous authors == current authors
+      \ifx\@year\@prevyear% Same author, same year
+        ,##6%
+      \else% Same author, different years
+        \@citesep\ ##4%
+      \fi%
+    \else% Different authors
+      \addtocounter{@numaut}{1}%
+      \ifx\@prevaut\mm@null\else% First author
+        \ifnum\the@numaut=\the@numauts%
+          \ifnum\the@numaut>2%
+            \@closecite,\ and\ %
+          \else%
+            \@closecite\ and\ %
+          \fi%
+        \else%
+          \@closecite,\ %
+        \fi%
+      \fi%
+      \expandafter\@car\@butlist\@nil\ (##4%
+      \edef\@tempaut{\expandafter\@cdr\@autlist\@nil}%
+      \xdef\@autlist{\@tempaut}%
+      \edef\@tempaut{\expandafter\@cdr\@butlist\@nil}%
+      \xdef\@butlist{\@tempaut}%
+    \fi%
+    \gdef\@prevyear{##5}%
+  \fi%
+  \gdef\@prevaut{##7}}%
+  \@internalcite}
+
+\def\shortcitenp{\def\@citeseppen{-1000}%
+  \def\@citesep{,}%
+  \def\@closecite{}%
+  \setcounter{@numauts}{0}%
+  \setcounter{@numaut}{0}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{%
+  \def\@aut{##7}\def\@year{##5}%
+  \ifnum ##8=0% Initial pass to count number of distinct authors and
+              % determine which way to print each author's name
+    \ifx\@aut\@prevaut%
+       \setbox\@tempcba\hbox{\@thisaut}\setbox\@tempcbb\hbox{{##1}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisaut{{##1}}\fi%
+       \setbox\@tempcba\hbox{\@thisbut}\setbox\@tempcbb\hbox{{##2}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisbut{{##2}}\fi%
+    \else%
+      \addtocounter{@numauts}{1}%
+      \ifnum\the@numauts>2%
+        \def\@tempaut{\@autlist}%
+        \xdef\@autlist{\@tempaut{\@thisaut}}\def\@tempaut{\@butlist}%
+        \xdef\@butlist{\@tempaut{\@thisbut}}%
+      \else%
+        \ifnum\the@numauts=2%
+          \xdef\@autlist{\@thisaut}\xdef\@butlist{\@thisbut}%
+        \fi%
+      \fi%
+      \gdef\@thisaut{{##1}}\gdef\@thisbut{{##2}}%
+    \fi%
+  \else% Main pass to produce text for document
+    \ifx\@aut\@prevaut% Previous authors == current authors
+      \ifx\@year\@prevyear% Same author, same year
+        ,##6%
+      \else% Same author, different years
+        \@citesep\ ##4%
+      \fi%
+    \else% Different authors
+      \addtocounter{@numaut}{1}%
+      \ifx\@prevaut\mm@null\else% First author
+        \@closecite;\ %
+      \fi%
+      \expandafter\@car\@butlist\@nil\ ##4%
+      \edef\@tempaut{\expandafter\@cdr\@autlist\@nil}%
+      \xdef\@autlist{\@tempaut}%
+      \edef\@tempaut{\expandafter\@cdr\@butlist\@nil}%
+      \xdef\@butlist{\@tempaut}%
+    \fi%
+    \gdef\@prevyear{##5}%
+  \fi%
+  \gdef\@prevaut{##7}}%
+  \@internalcite}
+
+\def\longcite{\def\@citeseppen{-1000}%
+  \def\@citesep{,}%
+  \def\@closecite{)}%
+  \setcounter{@numauts}{0}%
+  \setcounter{@numaut}{0}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{%
+  \def\@aut{##7}\def\@year{##5}%
+  \ifnum ##8=0% Initial pass to count number of distinct authors and
+              % determine which way to print each author's name
+    \ifx\@aut\@prevaut%
+       \setbox\@tempcba\hbox{\@thisaut}\setbox\@tempcbb\hbox{{##1}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisaut{{##1}}\fi%
+       \setbox\@tempcba\hbox{\@thisbut}\setbox\@tempcbb\hbox{{##2}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisbut{{##2}}\fi%
+    \else%
+      \addtocounter{@numauts}{1}%
+      \ifnum\the@numauts>2%
+        \def\@tempaut{\@autlist}%
+        \xdef\@autlist{\@tempaut{\@thisaut}}\def\@tempaut{\@butlist}%
+        \xdef\@butlist{\@tempaut{\@thisbut}}%
+      \else%
+        \ifnum\the@numauts=2%
+          \xdef\@autlist{\@thisaut}\xdef\@butlist{\@thisbut}%
+        \fi%
+      \fi%
+      \gdef\@thisaut{{##1}}\gdef\@thisbut{{##2}}%
+    \fi%
+  \else% Main pass to produce text for document
+    \ifx\@aut\@prevaut% Previous authors == current authors
+      \ifx\@year\@prevyear% Same author, same year
+        ,##6%
+      \else% Same author, different years
+        \@citesep\ ##4%
+      \fi%
+    \else% Different authors
+      \addtocounter{@numaut}{1}%
+      \ifx\@prevaut\mm@null\else% First author
+        \ifnum\the@numaut=\the@numauts%
+          \ifnum\the@numaut>2%
+            \@closecite,\ and\ %
+          \else%
+            \@closecite\ and\ %
+          \fi%
+        \else%
+          \@closecite,\ %
+        \fi%
+      \fi%
+      \expandafter\@car\@autlist\@nil\ (##4%
+      \edef\@tempaut{\expandafter\@cdr\@autlist\@nil}%
+      \xdef\@autlist{\@tempaut}%
+      \edef\@tempaut{\expandafter\@cdr\@butlist\@nil}%
+      \xdef\@butlist{\@tempaut}%
+    \fi%
+    \gdef\@prevyear{##5}%
+  \fi%
+  \gdef\@prevaut{##7}}%
+  \@internalcite}
+
+\def\longcitenp{\def\@citeseppen{-1000}%
+  \def\@citesep{,}%
+  \def\@closecite{}%
+  \setcounter{@numauts}{0}%
+  \setcounter{@numaut}{0}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{%
+  \def\@aut{##7}\def\@year{##5}%
+  \ifnum ##8=0% Initial pass to count number of distinct authors and
+              % determine which way to print each author's name
+    \ifx\@aut\@prevaut%
+       \setbox\@tempcba\hbox{\@thisaut}\setbox\@tempcbb\hbox{{##1}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisaut{{##1}}\fi%
+       \setbox\@tempcba\hbox{\@thisbut}\setbox\@tempcbb\hbox{{##2}}%
+       \ifdim\wd\@tempcba<\wd\@tempcbb\gdef\@thisbut{{##2}}\fi%
+    \else%
+      \addtocounter{@numauts}{1}%
+      \ifnum\the@numauts>2%
+        \def\@tempaut{\@autlist}%
+        \xdef\@autlist{\@tempaut{\@thisaut}}\def\@tempaut{\@butlist}%
+        \xdef\@butlist{\@tempaut{\@thisbut}}%
+      \else%
+        \ifnum\the@numauts=2%
+          \xdef\@autlist{\@thisaut}\xdef\@butlist{\@thisbut}%
+        \fi%
+      \fi%
+      \gdef\@thisaut{{##1}}\gdef\@thisbut{{##2}}%
+    \fi%
+  \else% Main pass to produce text for document
+    \ifx\@aut\@prevaut% Previous authors == current authors
+      \ifx\@year\@prevyear% Same author, same year
+        ,##6%
+      \else% Same author, different years
+        \@citesep\ ##4%
+      \fi%
+    \else% Different authors
+      \addtocounter{@numaut}{1}%
+      \ifx\@prevaut\mm@null\else% First author
+        \@closecite;\ %
+      \fi%
+      \expandafter\@car\@autlist\@nil\ (##4%
+      \edef\@tempaut{\expandafter\@cdr\@autlist\@nil}%
+      \xdef\@autlist{\@tempaut}%
+      \edef\@tempaut{\expandafter\@cdr\@butlist\@nil}%
+      \xdef\@butlist{\@tempaut}%
+    \fi%
+    \gdef\@prevyear{##5}%
+  \fi%
+  \gdef\@prevaut{##7}}%
+  \@internalcite}
+
+\def\citeA{\def\@citeseppen{-1000}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{%
+    \ifnum ##8>1% Second or later cite of this work.
+    ##2%
+    \else ##1% First cite of this work
+    \fi}%
+  \@citedata}
+
+\def\shortciteA{\def\@citeseppen{-1000}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{##2}\@citedata}
+
+\def\longciteA{\def\@citeseppen{-1000}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{##1}\@citedata}
+
+\def\citeyear{\def\@citeseppen{-1000}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{##5}\@citedata}
+
+\def\citeyearext{\def\@citeseppen{-1000}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{##4}\@citedata}
+
+\def\citeext{\def\@citeseppen{-1000}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{##6}\@citedata}
+
+\def\citenumA{\def\@citeseppen{-1000}%
+  \def\citeauthoryear##1##2##3##4##5##6##7##8{##3}\@citedata}
+
+%% The lines that have mm@\citeb in them are to keep track of the
+%% first and second time a citation is used.  The ASA style demands
+%% that the first citation be all the authors and subsequent citations
+%% be of the et. al. form, unless there are 6 or more authors in which
+%% case the et. al form is used all the time.  We deal with the 6 or
+%% more case in the asa.bst file, but having both the short and long
+%% form of the authors be the et. al form.
+
+\def\@genamedef#1{\global\expandafter\edef\csname#1\endcsname{\relax}}
+
+\def\@citedata#1{%
+\if@filesw\immediate\write\@auxout{\string\citation{#1}}\fi
+  \@ifundefined{b@#1}{{\bf ?}\@warning
+       {Citation `#1' on page \thepage \space undefined}}%
+{\@ifundefined{mm@#1}
+{{\csname b@#1\endcsname{1}}\@genamedef{mm@#1}}
+{{\csname b@#1\endcsname{2}}}}}
+
+
+% don't box citations, separate with \@citesep and a space
+% also, make the penalty between citations negative: a good place to break.
+%
+
+\def\@citex[#1]#2{%
+\if@filesw\immediate\write\@auxout{\string\citation{#2}}\fi%
+  \gdef\@prevaut{}%
+\@for\@citeb:=#2\do{{\csname b@\@citeb\endcsname{0}}}%
+  \gdef\@prevaut{}%
+  \gdef\@prevyear{}%
+  \ifnum\the@numauts>1\edef\@tempaut{\@autlist{\@thisaut}}%
+  \xdef\@autlist{\@tempaut}\edef\@tempaut{\@butlist{\@thisbut}}%
+  \xdef\@butlist{\@tempaut}\else\xdef\@autlist{\@thisaut}%
+  \xdef\@butlist{\@thisbut}\fi%
+  \@cite{\@for\@citeb:=#2\do{\@ifundefined% by Young
+       {b@\@citeb}{{\bf ?}\@warning
+       {Citation `\@citeb' on page \thepage \space undefined}}%
+{\@ifundefined{mm@\@citeb}
+{{\csname b@\@citeb\endcsname{1}}\@genamedef{mm@\@citeb}}
+{{\csname b@\@citeb\endcsname{2}}}}}}{#1}}
+
+%% Original versions of these macros.
+%%%\def\@citedatax[#1]#2{%
+%%%\if@filesw\immediate\write\@auxout{\string\citation{#2}}\fi
+%%%  \def\@citea{}\@cite{\@for\@citeb:=#2\do
+%%%    {\@citea\def\@citea{, }\@ifundefined  % by Young
+%%%       {b@\@citeb}{{\bf ?}\@warning
+%%%       {Citation `\@citeb' on page \thepage \space undefined}}%
+%%%{\csname b@\@citeb\endcsname}}}{#1}}
+
+%%%% don't box citations, separate with ; and a space
+%%%% also, make the penalty between citations negative: a good place to break.
+%%%%
+%%%\def\@citex[#1]#2{%
+%%%\if@filesw\immediate\write\@auxout{\string\citation{#2}}\fi
+%%%  \def\@citea{}\@cite{\@for\@citeb:=#2\do
+%%%    {\@citea\def\@citea{\@closecite; }\@ifundefined  % by Young
+%%%       {b@\@citeb}{{\bf ?}\@warning
+%%%       {Citation `\@citeb' on page \thepage \space undefined}}%
+%%%{\csname b@\@citeb\endcsname}}}{#1}}
+
+\newcounter{@numauts}
+\setcounter{@numauts}{0}
+\newcounter{@numaut}
+\def\@cite#1#2{{#1\if@tempswa , #2\fi}\@closecite}%
+\def\mm@null{}
+\def\@autlist{}
+\def\@thisaut{}
+\def\@butlist{}
+\def\@thisbut{}
+\newbox\@tempcba
+\newbox\@tempcbb
+
+%----------------------------------------------------------------
+% Setting up the bibliography section
+% (from apalike.sty)
+% No labels in the bibliography.
+%
+\def\@biblabel#1{}
+
+% umlaut for the .bib file
+\newcommand{\um}[1]{\"{#1}}
+
+% (from apalike.sty) 
+% Set length of hanging indentation for bibliography entries.
+%
+\newlength{\bibhang}
+\setlength{\bibhang}{2em}
+
+% (from apalike.sty).
+% \thebibliography environment depends on whether or not chapters can exist.
+%
+% NOTE: The instances of 'References' in the second \def here used to be
+%       instances of 'Bibliography'.  I changed them.
+%
+\@ifundefined{chapter}{\def\thebibliography#1{%
+\def\preapp{}\setcounter{@isappend}{0}%
+\section*{REFERENCES\@mkboth
+  {References}{References}}\list
+  {\relax}{\setlength{\labelsep}{0em}
+    \setlength{\itemindent}{-\bibhang}
+    \setlength{\leftmargin}{\bibhang}}
+    \def\newblock{\hskip .11em plus .33em minus .07em}
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=1000\relax}}%
+{\def\thebibliography#1{\chapter*{REFERENCES\@mkboth
+  {References}{References}}\list
+  {\relax}{\setlength{\labelsep}{0em}
+    \setlength{\itemindent}{-\bibhang}
+    \setlength{\leftmargin}{\bibhang}}
+    \def\newblock{\hskip .11em plus .33em minus .07em}
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=1000\relax}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Part 2: General style commands
+%
+% Does one use a comma before the ``and'' in a list?
+\def\cand{,\ and\ }
+\def\cor{,\ or\ }
+
+% Append items to the right end of an existing token
+\toksdef\ta=0 \toksdef\tb=2
+\long\def\rightappenditem#1\to#2{\ta=\expandafter{#1}\tb=\expandafter{#2}%
+\edef#2{\the\tb\the\ta}}
+\long\def\rtappenditem#1\to#2{\tb=\expandafter{#2}\xdef#2{\the\tb#1}}
+%
+%---------------------------------------------------------
+% Figure/Table captions
+%
+
+\long\def\@makecaption#1#2{
+ \vskip 10pt 
+ \setbox\@tempboxa\hbox{\em #1. #2.}      % was : not .
+ \ifdim \wd\@tempboxa >\hsize{\em #1. #2.}\par \else 
+        \hbox to\hsize{\hfil\box\@tempboxa\hfil} 
+ \fi}
+
+%----------------------------------------------------------
+% Theorems, Definitions, etc.
+%
+
+\let\newrtheorem\newtheorem
+
+\def\proof{\@ifnexchar[{\@lproof}{\@proof}}
+
+\def\endproof{\par}
+
+%  Don't allow equation numbering within section
+\def\eqnsec{}
+
+\def\@lproof[#1]{\par{\it Proof of #1.}}
+
+\def\@proof{\par{\it Proof.}}
+
+\def\@begintheorem#1#2{\rm \trivlist \item[\hskip\labelsep\hspace{\parindent}%
+{\it #1\ #2.}]}
+\def\@opargbegintheorem#1#2#3{\rm \trivlist
+      \item[\hskip \labelsep\hspace{\parindent}{\it #1\ #2.\ (#3)}]}
+
+% Don't gobble spaces when looking for [ for optional argument
+
+\def\@ifnexchar#1#2#3{\let\@tempe #1\def\@tempa{#2}\def\@tempb{#3}\futurelet
+    \@tempc\@ifnchns}
+
+\def\@ifnchns{\ifx \@tempc \@tempe\let\@tempd\@tempa\else\let\@tempd\@tempb\fi
+     \@tempd}
+
+%----------------------------------------------------------
+% Sectioning
+%
+
+\def\section{\ifnum\the@iskey=1%
+               \begin{abstract}%
+               \end{abstract}%
+             \fi%
+             \@startsection {section}{1}{\parindent}{3.5ex plus 1ex minus 
+               .2ex}{2.3ex plus .2ex}{\centering\large\sf}}
+
+\def\subsection{\@startsection{subsection}{2}{0pt}{3.25ex plus 1ex 
+  minus .2ex}{1.5ex plus .2ex}{\normalsize\sf}}
+
+\def\subsubsection{\@startsection{subsubsection}{3}{\parindent}{3.25ex plus
+ 1ex minus .2ex}{1.5ex plus .2ex}{\normalsize\sf}}
+
+\def\paragraph{\@startsection
+ {paragraph}{4}{\parindent}{3.25ex plus 1ex minus .2ex}{-1em}{\normalsize\bf}}
+
+\def\subparagraph{\@startsection
+ {subparagraph}{4}{\parindent}{3.25ex plus 1ex minus 
+ .2ex}{-1em}{\normalsize\bf}}
+
+\def\appendix{\par
+ \setcounter{section}{0}
+ \setcounter{subsection}{0}
+ \def\period{:}
+ \def\preapp{\@appd}
+ \def\@sectype{Appendix}
+ \setcounter{equation}{0}
+ \def\theequation{A.\arabic{equation}}
+ \setcounter{@isappend}{1}
+ \def\thesection{\Alph{section}}}
+
+\def\@startsection#1#2#3#4#5#6{\if@noskipsec \leavevmode \fi
+   \ifnum#2=1\edef\@currentname{\@sectype}\else\def\@currentname{Section}\fi%
+   \setcounter{@stsecdep}{#2}
+   \par \@tempskipa #4\relax
+   \@afterindenttrue
+   \ifdim \@tempskipa <\z@ \@tempskipa -\@tempskipa \@afterindentfalse\fi
+   \if@nobreak \everypar{}\else
+     \addpenalty{\@secpenalty}\addvspace{\@tempskipa}\fi \@ifstar
+     {\@ssect{#3}{#4}{#5}{#6}}{\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
+
+\def\@sect#1#2#3#4#5#6[#7]#8{\ifnum #2>1\def\septr{}\def\ucdel{}\def\prefix{}%
+\else\def\septr{\period}\def\ucdel{\uppercase}\def\prefix{\preapp}\fi%
+    \ifnum #2>\c@secnumdepth\def\@svsec{}\else%
+   \refstepcounter{#1}\edef\@svsec{\prefix~\csname the#1\endcsname\septr\hskip 1em}\fi%
+     \@tempskipa #5\relax%
+      \ifdim \@tempskipa>\z@% 
+        \begingroup #6\relax%
+          \@hangfrom{\hskip #3\relax\@svsec}%
+        {\interlinepenalty \@M \ucdel{#8}\par}%
+        \endgroup%
+       \csname #1mark\endcsname{#7}\addcontentsline%
+         {toc}{#1}{\ifnum #2>\c@secnumdepth \else%
+                      \protect\numberline{\csname the#1\endcsname}\fi%
+                    #7}\else%
+        \def\@svsechd{#6\hskip #3\@svsec \ucdel{#8}\csname #1mark\endcsname%
+                      {#7}\addcontentsline%
+                           {toc}{#1}{\ifnum #2>\c@secnumdepth \else%
+                             \protect\numberline{\csname the#1\endcsname}\fi%
+                       #7}}\fi%
+     \@xsect{#5}}
+
+\def\@ckap#1{\if#1\@empty\else\ifnum\the@isappend=1\period\hskip 1em\fi\fi}
+
+\def\@ssect#1#2#3#4#5{\def\title@{#5}
+\ifnum\the@stsecdep>1\def\ucdel{}\def\septr{}\def\prefix{}%
+\else\def\ucdel{\uppercase}\def\prefix{\preapp}\def\septr{\@ckap{\title@}}\fi%
+\@tempskipa #3\relax
+   \ifdim \@tempskipa>\z@
+     \begingroup #4\@hangfrom{\hskip #1}{\interlinepenalty \@M
+   \ucdel{\prefix\septr\ #5}\par}\endgroup
+   \else \def\@svsechd{#4\hskip #1\relax \ucdel{\prefix\septr\ #5}}\fi
+    \@xsect{#3}}
+
+\def\period{.}
+\def\preapp{}
+\def\@appd{APPENDIX}
+\newcounter{@stsecdep}
+\newcounter{@isappend}
+\setcounter{@isappend}{0}
+
+%-------------------------------------------------------------
+%  Title/author commands
+%
+
+\def\titlenote#1{}
+
+\def\author#1{#1}
+
+\def\name#1{\addtocounter{@numauts}{1}%
+  \ifnum\the@numauts=1%
+    \def\@author{{#1}}%
+  \else%
+    \rtappenditem{,{#1}}\to{\@author}%
+    \xdef\@prevname{\this@name}%
+    \@checkitall%
+  \fi%
+  \def\@prevpos{in}%
+  \def\@prevorg{}%
+  \setcounter{this@aufn}{0}\def\this@name{#1}}
+
+\def\position#1{\gdef\@prevpos{#1}}
+
+\def\department#1{\gdef\@prevdep{#1}}
+
+\def\organization#1{\ifnum\thethis@aufn=0%
+                      \gdef\@prevorg{#1}%
+                      \setcounter{this@aufn}{1}%
+                    \else%
+                      \rtappenditem{,\ #1}\to{\@prevorg}%
+                    \fi}
+
+\def\city#1{}
+
+\def\address#1{\ifnum\thethis@aufn=0%
+                 \gdef\@prevorg{#1}%
+                 \setcounter{this@aufn}{1}%
+               \else%
+                  \rtappenditem{,\ #1}\to{\@prevorg}%
+               \fi}
+
+\def\country#1{\def\@cty{#1}\if\usa\@cty\else%
+               \ifnum\thethis@aufn=0%
+                 \gdef\@prevorg{#1}%
+                 \setcounter{this@aufn}{1}%
+               \else%
+                  \rtappenditem{,\ #1}\to{\@prevorg}%
+               \fi\fi}
+
+\def\support#1{\ifnum\the@supportfn<0\else%
+               \ifnum\the@supportfn>0%
+                 \rtappenditem{,{#1}}\to{\@supportl}%
+               \else%
+                 \def\@supportl{{This research was supported by\ #1}}%
+               \fi%
+               \addtocounter{@supportfn}{1}\fi}
+
+\def\thanks#1{\ifnum\the@isthnx=0%
+                  \def\@thnx{#1}%
+                  \setcounter{@isthnx}{1}%
+                \else%
+                  \rtappenditem{\ #1}\to{\@thnx}
+                \fi}
+
+\def\corradd#1{}
+
+\def\email#1{}
+
+\def\noaddress{\setcounter{@address}{1}}
+
+\def\nothanks{\setcounter{@isthnx}{-1}}
+
+\def\nosupport{\setcounter{@supportfn}{-1}}
+
+\def\keywords#1{\setcounter{@iskey}{1}\@makekeys{#1}}
+
+\def\AMS{\@ifnextchar [{\@AMSs}{\@AMSp}}
+
+\def\blind#1{\setcounter{@arenames}{0}\setlength{\@blindrop}{#1}}
+
+\def\abstract{\small\quote\rule{\linewidth}{.01in}}
+
+\def\endabstract{\ifnum\the@iskey=1%
+                   \begin{@forkeys}
+                   \item\@keywords.\end{@forkeys}\setcounter{@iskey}{0}%
+                   \rule{\linewidth}{.01in}%
+                 \else%
+                   \newline\rule{\linewidth}{.01in}\fi\endquote}
+
+\def\date#1{\gdef\@date{#1}\setcounter{@isdate}{1}}
+
+\def\@forkeys{
+\setbox\@tempboxa\hbox{\ KEY WORDS:}
+  \list{\ KEY WORDS:}{\leftmargin\wd\@tempboxa%
+  \labelwidth\wd\@tempboxa}}
+\let\end@forkeys=\endlist
+
+\def\usa{}
+\def\uk{United Kingdom}
+\def\and{}
+
+\def\maketitle{\par
+ \ifnum\the@address=0
+   \xdef\@prevname{\this@name}%
+   \@checkitall%
+   \ifnum\the@isorgl>0%
+     \setcounter{@orgcount}{0}%
+     \@for\@tempd:=\@orgl\do{%
+       \addtocounter{@orgcount}{1}\setcounter{@depcount}{0}%
+       \setcounter{@howmd}{0}%
+       \@for\@tempe:=\@depl\do{%
+         \ifnum\expandafter\@car\@tempe\@nil=\the@orgcount%
+           \addtocounter{@howmd}{1}\fi}\setcounter{@whichd}{0}%
+       \setcounter{@olddep}{1}%
+       \@for\@tempe:=\@depl\do{%
+         \addtocounter{@depcount}{1}\setcounter{@poscount}{0}%
+         \ifnum\expandafter\@car\@tempe\@nil=\the@orgcount%
+           \setcounter{@howmp}{0}\addtocounter{@whichd}{1}%
+           \@for\@tempf:=\@posl\do{%
+             \ifnum\expandafter\@car\@tempf\@nil=\the@depcount%
+               \addtocounter{@howmp}{1}\fi}\setcounter{@whichp}{0}%
+           \@for\@tempf:=\@posl\do{%
+             \addtocounter{@poscount}{1}\setcounter{@namcount}{0}%
+             \ifnum\expandafter\@car\@tempf\@nil=\the@depcount%
+               \addtocounter{@whichp}{1}%
+               \@for\@tempg:=\@namel\do{%
+               \ifnum\expandafter\@car\@tempg\@nil=\the@poscount%
+                 \addtocounter{@namcount}{1}%
+                 \def\@thename{\expandafter\@cdr\@tempg\@nil}%
+                 \ifnum\the@namcount=1%
+                   \xdef\@thesenames{{\@thename}}%
+                   \def\@betw{\ is\ }
+                 \else%
+                   \rtappenditem{,{\@thename}}\to{\@thesenames}%
+                   \def\@betw{\ are\ }
+                 \fi%
+               \fi%
+               }\setcounter{@numaut}{0}%
+               \@for\@nextaut:=\@thesenames\do{\addtocounter{@numaut}{1}%
+                 \ifnum\the@numaut=1%
+                   \ifnum\the@whichd>\the@olddep%
+                     \ifnum\the@whichd=\the@howmd%
+                       \ifnum\the@howmd=2%
+                         \rtappenditem{\ and\ }\to{\@aufn}%
+                       \else%
+                         \rtappenditem{\cand}\to{\@aufn}%
+                       \fi%
+                     \else%
+                       \rtappenditem{,\ }\to{\@aufn}%
+                     \fi%
+                   \fi%
+                   \ifnum\the@whichp=1%
+                     \rtappenditem{\@nextaut}\to{\@aufn}%
+                   \else%
+                     \ifnum\the@howmp=\the@whichp%
+                       \ifnum\the@howmp=2%
+                         \rtappenditem{\ and\ \@nextaut}\to{\@aufn}%
+                       \else%
+                         \rtappenditem{\cand\@nextaut}\to{\@aufn}%
+                       \fi%
+                     \else%
+                       \rtappenditem{,\ \@nextaut}\to{\@aufn}%
+                     \fi%
+                   \fi%
+                 \else%
+                   \ifnum\the@numaut=\the@namcount%
+                     \ifnum\the@numaut=2%
+                       \rtappenditem{\ and\ \@nextaut}\to{\@aufn}%
+                     \else%
+                       \rtappenditem{\cand\@nextaut}\to{\@aufn}%
+                     \fi%
+                   \else%
+                     \rtappenditem{,\ \@nextaut}\to{\@aufn}%
+                   \fi%
+                 \fi%
+                 \setcounter{@olddep}{\the@whichd}%
+               }\rtappenditem{\@betw\expandafter\@cdr\@tempf\@nil}\to{\@aufn}%
+              \fi%
+           }\rtappenditem{,\ \expandafter\@cdr\@tempe\@nil}\to{\@aufn}%
+         \fi%
+       }\rtappenditem{,\ \@tempd.\ }\to{\@aufn}%
+     } 
+   \fi
+ \fi
+ \begingroup
+ \def\@makefnmark{\hbox 
+ to 0pt{$^{\@thefnmark}$\hss}} 
+ \if@twocolumn 
+ \twocolumn[\@maketitle] 
+ \else \newpage
+ \global\@topnum\z@ \@maketitle \fi\thispagestyle{plain}%\@thanks
+ \endgroup
+ \setcounter{footnote}{0}
+ \let\maketitle\relax
+ \let\@maketitle\relax
+ \gdef\@author{}\gdef\@title{}}
+
+\def\@maketitle{\newpage
+ \null
+\ifnum\the@isdate=1%
+\vspace{-.75in}\begin{flushright}\@date\end{flushright}\fi%
+ \vskip 2em \begin{flushright}
+ {\Large\sf \@title \par} \end{flushright}%
+\ifnum\the@arenames=1%
+  \begin{flushleft}
+  {\lineskip .5em
+  {\sc \@makeauthor{\@author}{\the@numauts}%
+   }}%
+  \end{flushleft}
+\else%
+\vspace{\@blindrop}
+\fi%
+\par%
+\ifnum\the@isthnx<0\def\@thnx{}\fi%
+\ifnum\the@supportfn>0%
+  \def\@support{\@makeauthor{\@supportl}{\the@supportfn}.}%
+  \ifnum\the@isthnx=1%
+    \rightappenditem{\ \@support}\to{\@thnx}%
+  \else%
+    \def\@thnx{\@support}%
+    \setcounter{@isthnx}{1}%
+  \fi%
+\fi%
+\ifnum\the@isorgl>0%
+  \setcounter{@isthnx}{1}%
+\else%
+  \def\@aufn{}%
+\fi%
+\ifnum\the@arenames=0\setcounter{@isthnx}{0}\fi%
+\ifnum\the@isthnx=1%
+  \rightappenditem{\@thnx}\to{\@aufn}%
+  \tfootnotetext{\@aufn}\fi%
+\vskip 1.5em}
+
+\def\tfootnotetext{\@ifnextchar
+    [{\@xfootnotenext}{\xdef\@thefnmark{}\@footnotetext}}
+
+\def\@checkitall{%
+  \ifnum\thethis@aufn>0%
+    \ifnum\the@isorgl>0%
+      \@checkaufnl{\@prevorg}{\@orgl}%
+      \ifnum\the@ckaufn=0%
+        \addtocounter{@isorgl}{1}%
+        \rtappenditem{,{\@prevorg}}\to{\@orgl}%
+        \rtappenditem{,{{\the@isorgl}{\@prevdep}}}\to{\@depl}%
+        \addtocounter{@isdepl}{1}%
+        \rtappenditem{,{{\the@isdepl}{\@prevpos}}}\to{\@posl}%
+        \addtocounter{@isposl}{1}%
+        \rtappenditem{,{{\the@isposl}{\@prevname}}}\to{\@namel}%
+      \else%
+        \edef\@tempz{{\the@ckaufn}{\@prevdep}}
+        \@checkaufnl{\@tempz}{\@depl}%
+        \ifnum\the@ckaufn=0%
+          \rtappenditem{,\@tempz}\to{\@depl}%
+          \addtocounter{@isdepl}{1}%
+          \rtappenditem{,{{\the@isdepl}{\@prevpos}}}\to{\@posl}%
+          \addtocounter{@isposl}{1}%
+          \rtappenditem{,{{\the@isposl}{\@prevname}}}\to{\@namel}%
+        \else%
+          \edef\@tempz{{\the@ckaufn}{\@prevpos}}
+          \@checkaufnl{\@tempz}{\@posl}%
+          \ifnum\the@ckaufn=0%
+            \rtappenditem{,\@tempz}\to{\@posl}%
+            \addtocounter{@isposl}{1}%
+            \rtappenditem{,{{\the@isposl}{\@prevname}}}\to{\@namel}%
+          \else%
+            \rtappenditem{,{{\the@ckaufn}{\@prevname}}}\to{\@namel}%
+          \fi%
+        \fi%
+      \fi%
+    \else%
+      \setcounter{@isorgl}{1}%
+      \xdef\@orgl{{\@prevorg}}%
+      \setcounter{@isdepl}{1}%
+      \xdef\@depl{{{1}{\@prevdep}}}%
+      \setcounter{@isposl}{1}%
+      \xdef\@posl{{{1}{\@prevpos}}}%
+      \xdef\@namel{{{1}{\@prevname}}}%
+    \fi\fi}
+
+\def\@checkaufnl#1#2{\setcounter{@ckaufn}{0}\setcounter{@whichmat}{0}%
+  \edef\@tempx{#1}%
+  \@for\@tempy:=#2\do{\addtocounter{@whichmat}{1}%
+    \ifx\@tempx\@tempy\setcounter{@ckaufn}{\the@whichmat}\fi}}
+
+\def\@makekeys#1{\@for\@nextkey:=#1\do{%
+\ifnum\the@numkeys=0\edef\@keywords{\@nextkey}\setcounter{@numkeys}{1}\else%
+\rtappenditem{; \@nextkey}\to{\@keywords}\fi}}
+
+\def\@AMSs[#1]#2{}
+
+\def\@AMSp#1{}
+
+\def\@makeauthor#1#2{\setcounter{@numaut}{0}%
+  \@for\@nextaut:=#1\do{\addtocounter{@numaut}{1}%
+    \ifnum\the@numaut=1%
+      \@nextaut%
+    \else%
+      \ifnum\the@numaut=#2%
+        \ifnum\the@numaut=2%
+          \ and\ \@nextaut
+        \else%
+          \cand\@nextaut
+        \fi%
+      \else%
+        ,\ \@nextaut
+      \fi%
+    \fi}}
+
+\def\@thnx{}
+\def\@support{}
+\def\@aufn{}
+\def\@title{\hspace{0in}}
+\def\this@name{}
+\def\@author{{No author given}}
+\def\@prevpos{}
+\def\@prevdep{}
+\def\@prevorg{}
+\def\AK{AK}
+\def\HI{HI}
+\def\WA{WA}
+\def\OR{OR}
+\def\CA{CA}
+\def\ID{ID}
+\def\NE{NE}
+\def\MT{MT}
+\def\UT{UT}
+\def\AZ{AZ}
+\def\WY{WY}
+\def\CO{CO}
+\def\NM{NM}
+\def\ND{ND}
+\def\SD{SD}
+\def\NB{NB}
+\def\KS{KS}
+\def\OK{OK}
+\def\TX{TX}
+\def\MN{MN}
+\def\IA{IA}
+\def\MO{MO}
+\def\AR{AR}
+\def\LA{LA}
+\def\WI{WI}
+\def\IL{IL}
+\def\MI{MI}
+\def\IN{IN}
+\def\KY{KY}
+\def\TN{TN}
+\def\MS{MS}
+\def\OH{OH}
+\def\AL{AL}
+\def\NY{NY}
+\def\PA{PA}
+\def\WV{WV}
+\def\VA{VA}
+\def\NC{NC}
+\def\SC{SC}
+\def\GA{GA}
+\def\FL{FL}
+\def\VT{VT}
+\def\MA{MA}
+\def\CT{CT}
+\def\NJ{NJ}
+\def\DE{DE}
+\def\MD{MD}
+\def\ME{ME}
+\def\NH{NH}
+\def\RI{RI}
+\def\DC{DC}
+\newlength{\@blindrop}
+\newcounter{@arenames}
+\setcounter{@arenames}{1}
+\newcounter{@isdate}
+\setcounter{@isdate}{0}
+\newcounter{@depcount}
+\newcounter{@poscount}
+\newcounter{@namcount}
+\newcounter{@orgcount}    
+\newcounter{@howmp}
+\newcounter{@whichp}
+\newcounter{@howmd}
+\newcounter{@whichd}
+\newcounter{@olddep}
+\newcounter{this@aufn}
+\newcounter{@ckaufn}
+\newcounter{@whichmat}
+\newcounter{@isorgl}
+\setcounter{@isorgl}{0}
+\newcounter{@isdepl}
+\setcounter{@isdepl}{0}
+\newcounter{@isposl}
+\setcounter{@isposl}{0}
+\newcounter{@address}
+\setcounter{@address}{0}
+\newcounter{@iskey}
+\setcounter{@iskey}{0}
+\newcounter{@numkeys}
+\setcounter{@numkeys}{0}
+\newcounter{@isthnx}
+\setcounter{@isthnx}{0}
+\newcounter{@supportfn}
+\setcounter{@supportfn}{0}
+
+%----------------------------------------------------------
+% Labeling
+%
+% We modified labels so that they also keep track of the type of object
+% being labeled (7/12/96)
+%  Implemented so far: Equation, Section, Appendix, enumerate,
+%  Theorem, Lemma, floats etc. 
+%
+% The new command is \nameref which takes a label as its argument and
+% produces the appropriate name in the same way that \pageref takes a
+% label as an argument and produces the appropriate page.
+%
+% Also define \tref to produce both the name and the label
+%
+% Also define new \eref so that the parentheses automatically
+% appear around the equation number.
+%
+% Also, all lines with \@currentname elsewhere in this file are
+% part of this modification.
+%
+
+\def\label#1{\@bsphack\if@filesw {\let\thepage\relax
+   \def\protect{\noexpand\noexpand\noexpand}%
+        \xdef\@gtempa{\write\@auxout{\string
+        \newlabel{#1}{{\@currentlabel}{\thepage}{\@currentname}}}}}%
+     \@gtempa\if@nobreak \ifvmode\nobreak\fi\fi\fi\@esphack}
+
+\def\ref#1{\@ifundefined{r@#1}{{\bf ??}\@warning
+   {Reference `#1' on page \thepage \space 
+    undefined}}{\edef\@tempa{\@nameuse{r@#1}}\expandafter
+    \@carv\@tempa \@nil\null}}
+
+\def\eref#1{\@ifundefined{r@#1}{{\bf ??}\@warning
+   {Reference `#1' on page \thepage \space 
+    undefined}}{\edef\@tempa{\@nameuse{r@#1}}(\expandafter
+    \@carv\@tempa \@nil)\null}}
+
+\def\pageref#1{\@ifundefined{r@#1}{{\bf ??}\@warning
+   {Reference `#1' on page \thepage \space 
+    undefined}}{\edef\@tempa{\@nameuse{r@#1}}\expandafter
+    \@cdrv\@tempa\@nil\null}}
+
+\def\nameref#1{\@ifundefined{r@#1}{{\bf ??}\@warning
+   {Reference `#1' on page \thepage \space 
+    undefined}}{\edef\@tempa{\@nameuse{r@#1}}\expandafter
+    \@cmrv\@tempa\@nil}}
+
+\def\tref#1{\@ifundefined{r@#1}{{\bf ??}\@warning
+   {Reference `#1' on page \thepage \space 
+    undefined}}{\edef\@tempa{\@nameuse{r@#1}}\expandafter
+    \@cmrv\@tempa\@nil~\expandafter\@carv\@tempa\@nil}}
+
+\def\caption{%
+\edef\@currentname{\uppercase{\expandafter\@car\@captype\@nil}%
+\expandafter\@cdr\@captype\@nil}%
+\refstepcounter\@captype \@dblarg{\@caption\@captype}}
+
+\def\enumerate{\@ifnextchar[{\@enumerate}{\@enumerate[Item]}}
+
+\def\equation{\@ifnexchar[{\@equation}{\@equation[Equation]}}
+
+\def\eqnarray{\@ifnexchar[{\@eqnarray}{\@eqnarray[Equation]}}
+
+\def\@thm#1#2{\edef\@currentname{#2}\refstepcounter
+    {#1}\@ifnextchar[{\@ythm{#1}{#2}}{\@xthm{#1}{#2}}}
+
+\def\@equation[#1]{$$ % $$ BRACE MATCHING HACK
+  \edef\@currentname{#1}%
+  \refstepcounter{equation}}
+
+\def\@eqnarray[#1]{\stepcounter{equation}\let\@currentlabel=\theequation%
+\edef\@currentname{#1}%
+\global\@eqnswtrue
+\global\@eqcnt\z@\tabskip\@centering\let\\=\@eqncr
+$$\halign to \displaywidth\bgroup\@eqnsel\hskip\@centering
+  $\displaystyle\tabskip\z@{##}$&\global\@eqcnt\@ne 
+  \hskip 2\arraycolsep \hfil${##}$\hfil
+ &\global\@eqcnt\tw@ \hskip 2\arraycolsep $\displaystyle\tabskip\z@{##}$\hfil 
+   \tabskip\@centering&\llap{##}\tabskip\z@\cr}
+
+\def\@enumerate[#1]{\ifnum \@enumdepth >3 \@toodeep\else
+      \advance\@enumdepth \@ne 
+      \edef\@enumctr{enum\romannumeral\the\@enumdepth}\list
+      {\csname label\@enumctr\endcsname}{\usecounter
+        {\@enumctr}\def\makelabel##1{\hss\llap{##1}}}\fi%
+      \def\@currentname{#1}}
+
+\def\@carv#1#2#3\@nil{#1}
+
+\def\@cdrv#1#2#3\@nil{#2}
+
+\def\@cmrv#1#2#3\@nil{#3}
+
+\def\@currentname{} % For \label commands that come before any environment
+
+\def\@sectype{Section} % Default label outside of environments
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

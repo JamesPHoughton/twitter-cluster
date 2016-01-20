@@ -1,0 +1,86 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Agarwal and Bennett}{Agarwal and
+  Bennett}{2}{2014}{2014}{}{agarwal  s   bennett  w}]{Agarwal2014}
+Agarwal, S. and Bennett, W. (2014),
+\newblock ``{A model of crowd enabled organization: Theory and methods for
+  understanding the role of twitter in the occupy protests},'' {\em {\ldots}
+  Journal of Communication}.
+
+\bibitem[\protect\citeauthoryear{Becker, Naaman, and Gravano}{Becker
+  et~al.}{3}{2011}{2011}{}{becker  h   naaman  m   gravano  l}]{Becker2011}
+Becker, H., Naaman, M., and Gravano, L. (2011),
+\newblock ``{Beyond Trending Topics: Real-World Event Identification on
+  Twitter.},'' {\em ICWSM}.
+
+\bibitem[\protect\citeauthoryear{Cogan and Andrews}{Cogan and
+  Andrews}{2}{2012}{2012}{}{cogan  p   andrews  m}]{Cogan2012}
+Cogan, P. and Andrews, M. (2012),
+\newblock ``{Reconstruction and analysis of twitter conversation graphs},''
+  {\em Proceedings of the First ACM International Workshop on Hot Topics on
+  Interdisciplinary Social Networks Research}.
+
+\bibitem[\protect\citeauthoryear{DiGrazia}{DiGrazia}{1}{2015}{2015}{}{digrazia
+  j}]{DiGrazia2015}
+DiGrazia, J. (2015),
+\newblock ``{Using Internet Search Data to Produce State-level Measures: The
+  Case of Tea Party Mobilization},'' {\em Sociological Methods {\&} Research},
+  0049124115610348--.
+
+\bibitem[\protect\citeauthoryear{Gregori, Lenzini, and Mainardi}{Gregori
+  et~al.}{3}{2013}{2013}{}{gregori  e   lenzini  l   mainardi  s}]{Gregori2013}
+Gregori, E., Lenzini, L., and Mainardi, S. (2013),
+\newblock ``{Parallel k-clique community detection on large-scale networks},''
+  {\em IEEE Transactions on Parallel and Distributed Systems}, 24(8).
+
+\bibitem[\protect\citeauthoryear{Huberty}{Huberty}{1}{2013}{2013}{}{huberty
+  m}]{Huberty2013}
+Huberty, M. (2013),
+\newblock ``{Multi-cycle forecasting of congressional elections with social
+  media},'' {\em {\ldots} of the 2nd workshop on Politics, Elections and Data}.
+
+\bibitem[\protect\citeauthoryear{Marres and Gerlitz}{Marres and
+  Gerlitz}{2}{2014}{2014}{}{marres  n   gerlitz  c}]{Marres}
+Marres, N. and Gerlitz, C. (2014),
+\newblock ``{Interface Methods: Renegotiating relations between digital
+  research, STS and Sociology},''  unpublished manuscript.
+
+\bibitem[\protect\citeauthoryear{Palla, Barab{\'{a}}si, and Vicsek}{Palla
+  et~al.}{3}{2007}{2007}{}{palla  g   barabasi  a   vicsek  t}]{Palla2007}
+Palla, G., Barab{\'{a}}si, A., and Vicsek, T. (2007),
+\newblock ``{Quantifying social group evolution},'' {\em Nature}.
+
+\bibitem[\protect\citeauthoryear{Ritter, Cherry, and Dolan}{Ritter
+  et~al.}{3}{2010}{2010}{}{ritter  a   cherry  c   dolan  b}]{Ritter2010}
+Ritter, A., Cherry, C., and Dolan, B. (2010),
+\newblock ``{Unsupervised modeling of twitter conversations},'' in {\em Human
+  Language Technologies: The 2010 Annual Conference of the North American
+  Chapter of the ACL},  pp.\ 172--180.
+
+\bibitem[\protect\citeauthoryear{Smith and Rainie}{Smith and
+  Rainie}{2}{2014}{2014}{}{smith  m   rainie  l}]{Smith2014}
+Smith, M. and Rainie, L. (2014),
+\newblock ``{Mapping twitter topic networks: From polarized crowds to community
+  clusters},''  unpublished manuscript.
+
+\bibitem[\protect\citeauthoryear{Tounaka}{Tounaka}{1}{2013}{2013}{}{tounaka
+  n}]{Tounaka2013}
+Tounaka, N. (2013),
+\newblock ``{How to Analyze 50 Billion Records in Less than a Second without
+  Hadoop or Big Iron},''.
+
+\bibitem[\protect\citeauthoryear{Tumasjan, Sprenger, Sandner, and
+  Welpe}{Tumasjan et~al.}{4}{2010}{2010}{}{tumasjan  a   sprenger  t   sandner
+  p   welpe  i}]{Tumasjan2010}
+Tumasjan, A., Sprenger, T., Sandner, P., and Welpe, I. (2010),
+\newblock ``{Predicting Elections with Twitter: What 140 Characters Reveal
+  about Political Sentiment.},'' {\em ICWSM}.
+
+\bibitem[\protect\citeauthoryear{Zubiaga, Spina, Fresno, and
+  Mart{\'{\i}}nez}{Zubiaga et~al.}{4}{2011}{2011}{}{zubiaga  a   spina  d
+  fresno  v   martinez  r}]{Zubiaga2011}
+Zubiaga, A., Spina, D., Fresno, V., and Mart{\'{\i}}nez, R. (2011),
+\newblock ``{Classifying trending topics: a typology of conversation triggers
+  on twitter},'' {\em Proceedings of the 20th ACM {\ldots}}.
+
+\end{thebibliography}

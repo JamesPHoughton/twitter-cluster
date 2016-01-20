@@ -1,0 +1,89 @@
+\documentclass[12pt]{article}
+\usepackage{setspace}
+\usepackage{cite}
+\usepackage{asa}
+
+% shooting for style similar to: https://us.sagepub.com/en-us/nam/american-sociological-review/journal201969#submission-guidelines
+
+%\usepackage{authblk}
+%\author[1]{James Houghton}
+%\author[1]{Michael Siegel}
+%\author[1]{Stuart Madnick}
+%\author[2]{Nobuaki Tounaka}
+%\author[2]{Buyanjargal Shirnen}
+%\author[2]{Daisuke Nakagawa}
+%\author[2]{Kazutaka Nakamura}
+%\affil[1]{Sloan School of Management, Massachusetts Institute of Technology}
+%\affil[2]{USP-Labs}
+
+
+%\author{
+%  Houghton, James\\
+%  \texttt{houghton@mit.edu}
+%  \and
+%  Siegel, Michael\\
+%  \and
+%  Madnick, Stuart\\
+%  \and 
+%  Tounaka, Nobuaki\\
+%  \and
+%  Shirnen, Buyanjargal\\
+%  \and
+%  Nakagawa, Daisuke\\
+%  \and 
+%  Nakamura, Kazutaka
+%}
+
+\title{Beyond Keywords: Tracking the development of conversations on social media through linked, nested hashtag clusters}
+
+%\include{Appendix_A_Python_Example}
+
+%\abstract{}
+
+\begin{document}
+\maketitle
+
+\doublespacing
+
+%\section{Motivation}
+	In seeking to know how newsworthy events influence public and political conversations, researchers benefit from data available through Social Media.
+Messages on platforms such as Twitter and Facebook represent a high volume sample  of the national conversation in near real time, and with the right handling can give insight into events such as elections, as demonstrated by ~\cite{Huberty2013,Tumasjan2010}; or processes such as social movements, as demonstrated by \cite{Agarwal2014,DiGrazia2015}. 
+Standard methods of social media analysis use keyword tracking and sentiment analysis to attempt to understand the range of perceptions surrounding these events. 
+While helpful for basic situational awareness, these methods do not help us understand how a set of narratives compete to interpret and frame an issue for action.For example, if we are interested in understanding the national conversation in reaction to the shooting at Emanuel AME church in Charleston, South Carolina, we could plot a timeseries of the volume of tweets containing the hashtag \texttt{\#charleston}, as seen in Figure 1.Alternate methods include assessing the relative 'positive' or 'negative' sentiment present in these tweets, or using a supervised learning categorizer to group messages according to preconceived ideas about their contents, as demonstrated by \cite{Becker2011,Ritter2010,Zubiaga2011}. 
+The addition of demographic information can help researchers understand the context of messages (McCormick et al. 2015)These techniques, however, are unable to infer from the data coherent patterns of thought that signify interpretation of the events? deeper meanings. 
+Interpretation depends upon making connections between the events as they happen and other concepts in the public discourse. 
+One way to measure these connections is to look as a network of co-citations surrounding our topic of interest, as has been demonstrated by \cite{Cogan2012,Smith2014}. 
+Representing hashtags as nodes on a network, each shared message contributes to the weight of an edge between these nodes. 
+This type of analysis is helpful in that it helps us begin to understand the structure of the discourse. 
+If we perform k-clique clustering on the network, we can see which sets of connections form coherent and conversations, as seen in Figure 2.In this example there are two distinct conversations happening with regards to the event: the first a description of the shooting itself and the human elements of the tragedy. 
+A second conversation focuses on the larger national-scale political conflicts to which the event points. 
+While each of the conversations is motivated by the same event, they are distinct from one another in the language they use and in the connections they make.
+
+\subsection{The contributions of this paper}We may hypothesize that how these conversations develop over time will influence the social and political response to the event. 
+In this paper we will explore methods of identifying and tracking the development of these conversations over time.
+Due to the computation-intensive nature of this analysis, we chose to implement the data manipulation algorithms in both python and Unicage shell scripts, \footnote{For a description of Unicage development tools, see \cite{Tounaka2013}} for prototyping and speed of execution, respectively. 
+Descriptions of these scripts can be found in the appendices, along with performance comparisons between the two languages.
+
+\section{Identifying Conversation Clusters}
+The image in Figure 2 is based upon network closeness between hashtags. Each of the hashtags present in the dataset forms a node in this network, and the relative strength of edges depends upon the number of times the pair occur together in a tweet ? their ?co-occurrence?, using the method of \cite{Marres}.The clusters themselves are then defined by k-clique community detection algorithms implemented in the COS Parallel library, developed by \cite{Gregori2013} and their use is demonstrated in the appendices.Every node in a cluster must be able to participate in at least one fully connected subgroup of size \texttt{k} with the other members of the group. Thus, the metric \texttt{k} determines how strict we are about closeness between keywords when defining the boundaries of a particular cluster. 
+For example, high values of \texttt{k} would impose strict requirements for interconnectedness between elements of an identified conversation, leading to a smaller, more coherent identified conversation, as seen in Figure 3.On the other hand, smaller values of \texttt{k} are less stringent about the requirements of connectivity they put on the elements in the cluster, leading to a larger, more loosely coupled group, as seen in Figure 4.
+
+%%bookmark
+\section{Representing Conversational Clusters as Nested Sets}
+Tight conversational clusters (high \texttt{k}) must necessarily be contained within larger clusters with less stringent connection requirements (low \texttt{k}). Performing clustering along a range of \texttt{k} values allows us to place a specific conversation in context of the larger discourse. 
+It becomes helpful to represent these clusters as nested sets, as seen in Figure 5, ignoring the node and edge construction of the network diagram in favor of something which allows us to observe the nested relationships the conversations have with one another. In this representation, we are able to observe the tightly clustered 5-clique conversation in context of the 4-clique conversation it inhabits, and the neighboring 4-clique conversations that together inhabit the larger discourse.
+
+\section{Tracking Conversations Chronologically}
+In order to track how elements of conversation weave into and out of the general discourse, we need to be able to interpret how conversational clusters identified at one point in time relate to those in subsequent intervals. We can do this in one of two ways. The first method is to track the volume of co-citations identified in the various conversational clusters identified on the first day of the analysis, as it changes over subsequent days. This indicates how well the connections made on the first day maintain their relevance in the larger conversation. Figure 6 shows how the connections made in the conversational clusters shown above in Figure 5 fall in volume over the 10 days subsequent to the initial event, paralleling the decay in pure keyword volume seen in Figure 1.The second method for tracking conversation volume over time takes into account the changes that happen within the conversation itself. The fundamental assumption in this analysis is that while the words and connections present in a conversation change, they do so incrementally in such a way as to allow for matching conversations during one time period with those in the following time period. \cite{Palla2007} discuss how communities of individuals develop over time and change. We can use the same techniques to track continuity of conversational clusters. The most basic way to do this is to count the fraction of elements of a conversational cluster at time 0 that are present in each conversational cluster at time 1, and use this fraction as the likelihood that each cluster at time 1 is an extension or contraction of the time 0 cluster in question. From this we can construct a transition matrix relating conversational clusters at time 0 with clusters at time 1, as seen in Table 1.To improve our estimates, we can take advantage of the fact that clusters that correspond from time 0 to time 1 will participate in a larger cluster that emerges if we perform our clustering algorithm on the union of all edges from the networks at time 0 and time 1. This reduces the number of possible pairings between days, yielding more specificity in our intra-day transition matricies.These transition matricies can be used to infer how clusters present in the first day?s analysis correspond to clusters in the second day, and so forth. These are visualized as a set of nested cluster diagrams, with traces linking likely clusters together, as seen in Figure 7. Heavier traces between clusters imply more confidence in the transition between the two sets.The volume of messages forming the edges of each cluster are shown plotted day by day in Figure 8. As the linkage between subsequent clusters is probabilistic, in this plot so to are the links connecting volume measures, with the weight of each link proportional to its likelihood.
+\section{Conclusion}
+The utility of social media analysis for sociological research can be extended well beyond the practice of tracking keyword volume, net post sentiment, or supervised classification. In particular, tracking conversational clusters within a network of hashtag co-citations can give both structural understanding of a conversation, and insight into how it develops over time.
+
+\section{Author's Note}
+The full set of scripts used to generate the analysis in this paper can be found at \verb|www.github.com\removed to anonymize|.
+
+
+\bibliographystyle{asa}
+\bibliography{twitter-clusters}{}
+
+
+\end{document}
