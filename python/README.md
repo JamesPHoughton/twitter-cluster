@@ -17,3 +17,4 @@ Step 5 Complete at 2016-01-21 21:31:52.660774
 created 17783 transition matrix files
 Step 6 Complete at 2016-01-21 21:35:07.867671
 ```
+Total time 39:27:28
