@@ -1,11 +1,19 @@
 \begin{thebibliography}{}
 
-\bibitem[\protect\citeauthoryear{Agarwal and Bennett}{Agarwal and
-  Bennett}{2}{2014}{2014}{}{agarwal  s   bennett  w}]{Agarwal2014}
-Agarwal, S. and Bennett, W. (2014),
+\bibitem[\protect\citeauthoryear{Agarwal, Bennett, Johnson, and Walker}{Agarwal
+  et~al.}{4}{2014}{2014}{}{agarwal  s d   bennett  w l   johnson  c n   walker
+  s}]{Agarwal2014}
+Agarwal, S.~D., Bennett, W.~L., Johnson, C.~N., and Walker, S. (2014),
 \newblock ``{A model of crowd enabled organization: Theory and methods for
-  understanding the role of twitter in the occupy protests},'' {\em {\ldots}
-  Journal of Communication}.
+  understanding the role of twitter in the occupy protests},'' {\em
+  International Journal of Communication}, 8, 646--672.
+
+\bibitem[\protect\citeauthoryear{Bail}{Bail}{1}{2015}{2015}{}{bail  c
+  a}]{Bail2015b}
+Bail, C.~A. (2015),
+\newblock ``{Taming Big Data: Using App Technology to Study Organizational
+  Behavior on Social Media},'' {\em Sociological Methods {\&} Research},
+  0049124115587825--.
 
 \bibitem[\protect\citeauthoryear{Becker, Naaman, and Gravano}{Becker
   et~al.}{3}{2011}{2011}{}{becker  h   naaman  m   gravano  l}]{Becker2011}
@@ -37,13 +45,22 @@ Gregori, E., Lenzini, L., and Mainardi, S. (2013),
   m}]{Huberty2013}
 Huberty, M. (2013),
 \newblock ``{Multi-cycle forecasting of congressional elections with social
-  media},'' {\em {\ldots} of the 2nd workshop on Politics, Elections and Data}.
+  media},'' {\em Proceedings of the 2nd workshop on Politics, Elections and
+  Data}.
 
 \bibitem[\protect\citeauthoryear{Marres and Gerlitz}{Marres and
   Gerlitz}{2}{2014}{2014}{}{marres  n   gerlitz  c}]{Marres}
 Marres, N. and Gerlitz, C. (2014),
 \newblock ``{Interface Methods: Renegotiating relations between digital
   research, STS and Sociology},''  unpublished manuscript.
+
+\bibitem[\protect\citeauthoryear{McCormick, Lee, Cesare, Shojaie, and
+  Spiro}{McCormick et~al.}{5}{2015}{2015}{}{mccormick  t h   lee  h   cesare  n
+    shojaie  a   spiro  e s}]{McCormick2015}
+McCormick, T.~H., Lee, H., Cesare, N., Shojaie, A., and Spiro, E.~S. (2015),
+\newblock ``{Using Twitter for Demographic and Social Science Research: Tools
+  for Data Collection and Processing},'' {\em Sociological Methods {\&}
+  Research},  0049124115605339--.
 
 \bibitem[\protect\citeauthoryear{Palla, Barab{\'{a}}si, and Vicsek}{Palla
   et~al.}{3}{2007}{2007}{}{palla  g   barabasi  a   vicsek  t}]{Palla2007}
@@ -81,6 +98,7 @@ Tumasjan, A., Sprenger, T., Sandner, P., and Welpe, I. (2010),
   fresno  v   martinez  r}]{Zubiaga2011}
 Zubiaga, A., Spina, D., Fresno, V., and Mart{\'{\i}}nez, R. (2011),
 \newblock ``{Classifying trending topics: a typology of conversation triggers
-  on twitter},'' {\em Proceedings of the 20th ACM {\ldots}}.
+  on twitter},'' {\em Proceedings of the 20th ACM international conference on
+  Information and knowledge management},  2461--2464.
 
 \end{thebibliography}
