@@ -1,0 +1,18 @@
+began analysis at:
+Fri Jan 22 23:32:49 JST 2016
+Fri Jan 22 23:32:49 JST 2016
+beginning step 1: list_word_pairings.sh
+Sat Jan 23 08:00:32 JST 2016
+beginning step 2: wgted_edge_gen.sh
+Sat Jan 23 08:04:04 JST 2016
+beginning step 3: unwgted_edge_gen.sh
+Sat Jan 23 08:12:15 JST 2016
+beginning step 4: run_mcliques.sh
+Sat Jan 23 08:14:33 JST 2016
+beginning step 5: run_cos.sh
+Sat Jan 23 08:23:26 JST 2016
+beginning step 6: back_to_org_words.sh
+Sat Jan 23 08:33:22 JST 2016
+beginning step 7: compute_transition_likelihoods.sh
+analysis complete at:
+Sat Jan 23 14:21:13 JST 2016

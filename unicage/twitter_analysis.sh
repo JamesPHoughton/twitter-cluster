@@ -41,34 +41,38 @@ ERROR_EXIT() {
   exit 1
 }
 
+echo "began analysis at:" >> analysis_log.txt
+echo $(date) >> analysis_log.txt
 
 for step in $(seq ${start} ${end}); do
-
+  echo $(date) >> analysis_log.txt
   case "${step}" in
-    "1" ) echo "list_word_pairings.sh"
+    "1" ) echo "beginning step 1: list_word_pairings.sh" >> analysis_log.txt
           ${shelld}/list_word_pairings.sh 
           ;;
-    "2" ) echo "wgted_edge_gen.sh"
+    "2" ) echo "beginning step 2: wgted_edge_gen.sh" >> analysis_log.txt
           ${shelld}/wgted_edge_gen.sh
           ;;
-    "3" ) echo "unwgted_edge_gen.sh"
+    "3" ) echo "beginning step 3: unwgted_edge_gen.sh" >> analysis_log.txt
           ${shelld}/unwgted_edge_gen.sh
           ;;
-    "4" ) echo "run_mcliques.sh"
+    "4" ) echo "beginning step 4: run_mcliques.sh" >> analysis_log.txt
           ${shelld}/run_mcliques.sh
           ;;
-    "5" ) echo "run_cos.sh"
+    "5" ) echo "beginning step 5: run_cos.sh" >> analysis_log.txt
           ${shelld}/run_cos.sh
           ;;
-    "6" ) echo "back_to_org_words.sh"
+    "6" ) echo "beginning step 6: back_to_org_words.sh" >> analysis_log.txt
           ${shelld}/back_to_org_words.sh
           ;;
-    "7" ) echo "compute_transition_likelihoods.sh"
+    "7" ) echo "beginning step 7: compute_transition_likelihoods.sh" >> analysis_log.txt
           ${shelld}/compute_transition_likelihoods.sh
           ;;
   esac
 
 done
+echo "analysis complete at:" >> analysis_log.txt
+echo $(date)>> analysis_log.txt
 
 rm -f $tmp-*
 exit 0
