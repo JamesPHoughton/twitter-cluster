@@ -8,6 +8,8 @@ semd=${homed}/SEMAPHORE
 datad=${homed}/DATA
 workd=${homed}/twitter
 
+tmp=/tmp/$$
+
 mkdir -p ${datad}
 
 n=0
@@ -21,19 +23,20 @@ while read zipfile; do
 
   {
     zcat $zipfile                                                        |
-    jq -c '{time: .timestamp_ms, hashtag: [.entities.hashtags[]?.text]}' |
-    grep "time"                                                          |
-    grep "hashtag"                                                       |
-    grep -v ':null'                                                         |
-    tr -d '{}[] '                                                        |
-    tr ':' ','                                                           |
-    fromcsv                                                              |
+#    jq -c '{time: .timestamp_ms, hashtag: [.entities.hashtags[]?.text]}' |
+#    grep "time"                                                          |
+#    grep "hashtag"                                                       |
+#    grep -v null                                                         |
+#    tr -d '{}[] '                                                        |
+#    tr ':' ','                                                           |
+#    fromcsv                                                              |
+    ${homed}/SHELL/myjsonparser	|
     # 1: "time" 2: timestamp (epoch msec) 3: "hashtag" 4-N: hashtags
 
     awk 'NF>5{for(i=4;i<=NF;i++)for(j=i+1;j<=NF;j++){print $i,$j,int($2/1000)}}' |
     # list all possible 2 word combinations with timestamp. 1: word1 2: word2 3: timestamp (epoch sec)
 
-    calclock -r 3                                                        |
+    TZ=UTC calclock -r 3                                                        |
     # 1: word1 2: word2 3: timestamp (epoch sec) 4: timestamp (YYYYMMDDhhmmss)
 
     self 1 2 4.1.8                                                       |
@@ -48,7 +51,7 @@ while read zipfile; do
    } &
    if [ $((n % 5)) -eq 0 ]; then
      eval semwait ${semd}/sem.{$((n-4))..$n}
-     eval rm ${semd}/sem.*
+     eval rm -f ${semd}/sem.* 2> /dev/null
    fi
 done
 
@@ -69,13 +72,14 @@ while read nozipfile; do
 
   {
     cat $nozipfile                                                       |
-    jq -c '{time: .timestamp_ms, hashtag: [.entities.hashtags[]?.text]}' |
-    grep "time"                                                          |
-    grep "hashtag"                                                       |
-    grep -v ':null'                                                      |
-    tr -d '{}[] '                                                        |
-    tr ':' ','                                                           |
-    fromcsv                                                              |
+#    jq -c '{time: .timestamp_ms, hashtag: [.entities.hashtags[]?.text]}' |
+#    grep "time"                                                          |
+#    grep "hashtag"                                                       |
+#    grep -v ':null'                                                         |
+#    tr -d '{}[] '                                                        |
+#    tr ':' ','                                                           |
+#    fromcsv                                                              |
+    ${homed}/SHELL/myjsonparser	|
     # 1: "time" 2: timestamp (epoch msec) 3: "hashtag" 4-N: hashtags
 
     awk 'NF>5{for(i=4;i<=NF;i++)for(j=i+1;j<=NF;j++){print $i,$j,int($2/1000)}}' |
@@ -96,13 +100,15 @@ while read nozipfile; do
    } &
    if [ $((n % 5)) -eq 0 ]; then
      eval semwait ${semd}/sem.{$((n-4))..$n}
-     eval rm ${semd}/sem.*
+     eval rm -f ${semd}/sem.* 2> /dev/null
    fi
 done
 
 #semwait "${semd}/sem.*"
 wait
-eval rm ${semd}/sem.*
+eval rm -f ${semd}/sem.* 2> /dev/null
+
+rm -f $tmp-*
 
 exit 0
 
