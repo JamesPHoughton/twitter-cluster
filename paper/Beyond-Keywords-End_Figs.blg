@@ -1,6 +1,6 @@
 This is BibTeX, Version 0.99d (TeX Live 2015)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
-The top-level auxiliary file: Beyond Keywords.aux
+The top-level auxiliary file: Beyond-Keywords-End_Figs.aux
 The style file: asa.bst
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: twitter-clusters.bib
@@ -9,7 +9,7 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 You've used 15 entries,
             3677 wiz_defined-function locations,
-            850 strings with 9246 characters,
+            850 strings with 9264 characters,
 and the built_in function-call counts, 31669 in all, are:
 = -- 6525
 > -- 596
